@@ -76,7 +76,7 @@ void *ptr;
  * cover the whole matrix!
  * Setting to NULL draws everything in black.
  */
-static void splm_crcsm2eps(int isCRS, void *sm, int (*regions)[4], double (*colors)[3], int nregions, char *fname)
+void splm_crcsm2eps(int isCRS, void *sm, int (*regions)[4], double (*colors)[3], int nregions, char *fname)
 {
 struct splm_crsm *crs=NULL;
 struct splm_ccsm *ccs=NULL;
