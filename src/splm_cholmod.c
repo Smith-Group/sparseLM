@@ -23,6 +23,15 @@
 #include <math.h>
 
 #include <cholmod.h>
+#ifdef CHOLMOD_R_MATRIX
+#define cholmod_start(x) M_R_cholmod_start(x)
+#define cholmod_finish(x) M_cholmod_finish(x)
+#define cholmod_free_factor(x1, x2) M_cholmod_free_factor(x1, x2)
+#define cholmod_free_dense(x1, x2) M_cholmod_free_dense(x1, x2)
+#define cholmod_solve(x1, x2, x3, x4) M_cholmod_solve(x1, x2, x3, x4)
+#define cholmod_analyze(x1, x2) M_cholmod_analyze(x1, x2)
+#define cholmod_factorize(x1, x2, x3) M_cholmod_factorize(x1, x2, x3)
+#endif
 
 
 #include "splm.h"

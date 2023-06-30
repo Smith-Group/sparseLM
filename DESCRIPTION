@@ -6,6 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-4651-167X"))
 Description: This package uses the Levenberg-Marquardt algorithm to solve nonlinear least squares problems having a sparse Jacobian. It does so using the C sparseLM and CHOLMOD libraries.
 Depends: Matrix
+LinkingTo: Matrix
 License: GPL-2
 Encoding: UTF-8
 NeedsCompilation: yes
