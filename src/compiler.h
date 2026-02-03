@@ -25,6 +25,8 @@
  * therefore gcc should be checked last
  */
 
+#include <math.h>
+
 #ifdef _MSC_VER // MSVC
 
 #define inline __inline
@@ -40,7 +42,7 @@ typedef unsigned __int32  uint32_t;
 
 #elif defined(__ICC) || defined(__INTEL_COMPILER) || defined(__GNUC__) // ICC, GCC
 
-#define SPLM_FINITE finite
+#define SPLM_FINITE isfinite
 #if defined(__SSE__) // || defined(__pentium4__) || defined(__tune_pentiumpro__)
 /* non-temporal & temporal prefetches */
 #define __PREFETCH_NT(mem) __asm__ __volatile__ ("prefetchnta %0" : : "m" (*((char *)(mem))))
