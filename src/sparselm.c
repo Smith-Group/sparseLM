@@ -97,13 +97,30 @@ int sparselm_dgCMatrix_to_splm_ccsm(SEXP dgCMatrix, struct splm_ccsm *ccsm) {
 	int i;
 	int *i_ptr = INTEGER(i_slot);
 	double *x_ptr = REAL(x_slot);
+	int *p_ptr = INTEGER(p_slot);
+	
+	if (p_ptr[0] != 0 || p_ptr[ccsm->nc] != ccsm->nnz) {
+		warning("p_slot");
+		UNPROTECT(nprotect);
+		return 1;
+	}
+	for (i = 0; i < ccsm->nc; i++) {
+		if (p_ptr[i] < 0 || p_ptr[i] > ccsm->nnz || p_ptr[i] > p_ptr[i + 1]) {
+			warning("p_slot");
+			UNPROTECT(nprotect);
+			return 1;
+		}
+	}
 	
 	for (i = 0; i < ccsm->nnz; i++) {
+		if (i_ptr[i] < 0 || i_ptr[i] >= ccsm->nr) {
+			warning("i_slot");
+			UNPROTECT(nprotect);
+			return 1;
+		}
 		ccsm->rowidx[i] = i_ptr[i];
 		ccsm->val[i] = x_ptr[i];
 	}
-	
-	int *p_ptr = INTEGER(p_slot);
 	
 	for (i = 0; i <= ccsm->nc; i++) {
 		ccsm->colptr[i] = p_ptr[i];
