@@ -1,9 +1,13 @@
 Package: sparseLM
 Title: Interface for sparseLM Levenberg-Marquardt Package
 Version: 0.5
-Authors@R: 
+Authors@R: c(
     person("Colin", "Smith", , "colin.smith@wesleyan.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-4651-167X"))
+           comment = c(ORCID = "0000-0002-4651-167X")),
+    person("Manolis", "Lourakis", , "lourakis@ics.forth.gr", role = "aut",
+           comment = c(ORCID = "0000-0003-4596-5773"))
+    )
+Maintainer: Colin Smith <colin.smith@wesleyan.edu>
 Description: This package uses the Levenberg-Marquardt algorithm to solve nonlinear least squares problems having a sparse Jacobian. It does so using the C sparseLM and CHOLMOD libraries.
 Depends: Matrix
 LinkingTo: Matrix
