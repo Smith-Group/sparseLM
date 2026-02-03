@@ -38,7 +38,7 @@ if (requireNamespace("Matrix", quietly = TRUE)) {
   x[1, 1] <- 1
   x[3, 1] <- 2
   # value is the same length as i
-  add_assign_col_inplace(x, i = c(1, 3), j = 1, value = c(10, -5))
+  add_assign_col_inplace(x, i = c(1L, 3L), j = 1L, value = c(10, -5))
 }
 
 }
