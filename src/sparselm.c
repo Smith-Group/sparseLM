@@ -199,6 +199,17 @@ SEXP sparselm(SEXP func, SEXP fjac, SEXP p, SEXP x, SEXP nconvars, SEXP Jnnz, SE
 		return R_NilValue;
 	}
 	
+	if (!Rf_isFunction(func)) {
+		Rf_error("func is not a function");
+		UNPROTECT(nprotect);
+		return R_NilValue;
+	}
+	if (!Rf_isFunction(fjac)) {
+		Rf_error("fjac is not a function");
+		UNPROTECT(nprotect);
+		return R_NilValue;
+	}
+	
 	sparselm_data.func = func;
 	sparselm_data.fjac = fjac;
 	sparselm_data.pnames = GET_NAMES(p);
@@ -255,6 +266,11 @@ SEXP sparselm(SEXP func, SEXP fjac, SEXP p, SEXP x, SEXP nconvars, SEXP Jnnz, SE
 	}
 	if (!Rf_isLogical(dif) || Rf_length(dif) != 1) {
 		Rf_error("dif not logical of length 1");
+		UNPROTECT(nprotect);
+		return R_NilValue;
+	}
+	if (LOGICAL(dif)[0] == NA_LOGICAL) {
+		Rf_error("dif must not be NA");
 		UNPROTECT(nprotect);
 		return R_NilValue;
 	}
