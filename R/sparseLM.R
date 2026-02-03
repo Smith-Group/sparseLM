@@ -1,4 +1,5 @@
 #' @useDynLib sparseLM
+#' @import Matrix
 NULL
 
 #' Sparse Levenberg-Marquardt Algorithm Options
