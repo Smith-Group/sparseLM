@@ -24,7 +24,7 @@
 
 #include <cholmod.h>
 #ifdef CHOLMOD_R_MATRIX
-#define cholmod_start(x) M_R_cholmod_start(x)
+#define cholmod_start(x) M_cholmod_start(x)
 #define cholmod_finish(x) M_cholmod_finish(x)
 #define cholmod_free_factor(x1, x2) M_cholmod_free_factor(x1, x2)
 #define cholmod_free_dense(x1, x2) M_cholmod_free_dense(x1, x2)
