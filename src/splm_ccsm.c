@@ -39,8 +39,7 @@ void splm_ccsm_alloc(struct splm_ccsm *sm, int nr, int nc, int nnz)
   sm->rowidx=(int *)malloc(nnz*sizeof(int));
   sm->colptr=(int *)malloc((nc+1)*sizeof(int));
   if(!sm->val || !sm->rowidx || !sm->colptr){
-    fprintf(stderr, "memory allocation request failed in splm_ccsm_alloc() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm_alloc() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 }
 
@@ -59,8 +58,7 @@ void splm_ccsm_alloc_novalues(struct splm_ccsm *sm, int nr, int nc, int nnz)
   sm->rowidx=(int *)malloc(nnz*sizeof(int));
   sm->colptr=(int *)malloc((nc+1)*sizeof(int));
   if(!sm->rowidx || !sm->colptr){
-    fprintf(stderr, "memory allocation request failed in splm_ccsm_alloc_novalues() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm_alloc_novalues() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 }
 
@@ -69,8 +67,7 @@ void splm_ccsm_alloc_values(struct splm_ccsm *sm)
 {
   sm->val=(double *)malloc(sm->nnz*sizeof(double));
   if(!sm->val){
-    fprintf(stderr, "memory allocation request failed in splm_ccsm_alloc_values() [nr=%d, nc=%d, nnz=%d]\n", sm->nr, sm->nc, sm->nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm_alloc_values() [nr=%d, nc=%d, nnz=%d]\n", sm->nr, sm->nc, sm->nnz);
   }
 }
 
@@ -82,16 +79,14 @@ void splm_ccsm_realloc_novalues(struct splm_ccsm *sm, int nr, int nc, int nnz)
 
   sm->rowidx=(int *)realloc(sm->rowidx, nnz*sizeof(int));
   if(!sm->rowidx){
-    fprintf(stderr, "memory allocation request failed in splm_ccsm_realloc_novalues() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm_realloc_novalues() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 
   if(nc!=sm->nc){
     sm->nc=nc;
     sm->colptr=(int *)realloc(sm->colptr, (nc+1)*sizeof(int));
     if(!sm->colptr){
-      fprintf(stderr, "memory allocation request failed in splm_ccsm_realloc() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-      exit(1);
+      SPLM_FATAL("memory allocation request failed in splm_ccsm_realloc() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
     }
   }
 }
@@ -369,8 +364,7 @@ int *rowcounts; // counters for the number of nonzeros in each row
   crs->nr=nr; crs->nc=nc; // ensure that crs has the correct dimensions
 
   if((rowcounts=(int *)calloc(nr, sizeof(int)))==NULL){ /* initialize to zero */
-    fprintf(stderr, "memory allocation request failed in splm_ccsm2crsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm2crsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 
   colidx=crs->colidx; rowptr=crs->rowptr;
@@ -445,8 +439,7 @@ double *val, *tmpv;
   tmpv=(double *)malloc(nr*sizeof(double));
   tmpi=(int *)malloc(nr*sizeof(int));
   if(!tmpv || !tmpi){
-    fprintf(stderr, "memory allocation request failed in splm_ccsm_col_sort()\n");
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_ccsm_col_sort()\n");
   }
 
   for(i=nr; i-->0;  ) tmpi[i]=0;

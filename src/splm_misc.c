@@ -23,6 +23,7 @@
 #include <float.h>
 #include <time.h>
 
+#include "compiler.h"
 #include "splm.h"
 #include "splm_priv.h"
 
@@ -35,8 +36,7 @@ void *ptr;
 
   ptr=(void *)malloc(sz);
   if(ptr==NULL){
-    fprintf(stderr, "memory allocation request for %zu bytes failed in file %s, line %d, exiting", sz, file, line);
-    exit(1);
+    SPLM_FATAL("memory allocation request for %zu bytes failed in file %s, line %d, exiting", sz, file, line);
   }
 
   return ptr;
@@ -49,8 +49,7 @@ void *ptr;
 
   ptr=(void *)realloc(oldptr, sz);
   if(ptr==NULL){
-    fprintf(stderr, "memory re-allocation request for %zu bytes failed in file %s, line %d, exiting\n", sz, file, line);
-    exit(1);
+    SPLM_FATAL("memory re-allocation request for %zu bytes failed in file %s, line %d, exiting\n", sz, file, line);
   }
 
   return ptr;
@@ -99,8 +98,7 @@ double scx, scy, scl;
   }
 
   if((fp=fopen(fname, "w"))==NULL){
-    fprintf(stderr, "splm_crcsm2eps(): failed to open file %s for writing\n", fname);
-    exit(1);
+    SPLM_FATAL("splm_crcsm2eps(): failed to open file %s for writing\n", fname);
   }
 
   scx=((double)(_A4_WIDTH-2*_HORZ_OFFSET))/(double)(ncols);
@@ -244,8 +242,7 @@ int fvec_sz=n, pp_sz=m, fvecp_sz=n;
 
   buf=(double *)malloc((fvec_sz + pp_sz + fvecp_sz)*sizeof(double));
   if(!buf){
-    fprintf(stderr, "sparselm_chkjac_core(): memory allocation request failed\n");
-    exit(1);
+    SPLM_FATAL("sparselm_chkjac_core(): memory allocation request failed\n");
   }
   fvec=buf;
   pp=fvec+fvec_sz;

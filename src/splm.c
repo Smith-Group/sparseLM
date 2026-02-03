@@ -465,25 +465,25 @@ void *quads[4]={NULL, NULL, NULL, NULL};
 
   /* error checking */
   if(nobs<nvars){
-    fprintf(stderr, "splm_core(): cannot solve a problem with fewer measurements [%d] than unknowns [%d]\n", nobs, nvars);
+    SPLM_EPRINT( "splm_core(): cannot solve a problem with fewer measurements [%d] than unknowns [%d]\n", nobs, nvars);
     return SPLM_ERROR;
   }
 
   if(nconvars<0){
-    fprintf(stderr, "splm_core(): number of variables to be kept constant must be non negative ([%d])\n", nconvars);
+    SPLM_EPRINT( "splm_core(): number of variables to be kept constant must be non negative ([%d])\n", nconvars);
     return SPLM_ERROR;
   }
 
   if(!jacfs->crsfjac && !jacfs->ccsfjac){
     if(jacisan){
-      fprintf(stderr, "splm_core(): a function computing the Jacobian should be supplied!\n");
+      SPLM_EPRINT( "splm_core(): a function computing the Jacobian should be supplied!\n");
       return SPLM_ERROR;
     }
     else
-      fprintf(stderr, "\n*** warning: requested attempt to discover the Jacobian's nonzero pattern might fail quietly in splm_core()!\n");
+      SPLM_EPRINT( "\n*** warning: requested attempt to discover the Jacobian's nonzero pattern might fail quietly in splm_core()!\n");
   }
   else if(Jnnz<=0){ /* a function computing either the Jacobian or its nonzero pattern has been supplied */
-    fprintf(stderr, "splm_core(): invalid Jacobian size speficied, number of nonzero elements must be positive! [%d]\n", Jnnz);
+    SPLM_EPRINT( "splm_core(): invalid Jacobian size speficied, number of nonzero elements must be positive! [%d]\n", Jnnz);
     return SPLM_ERROR;
   }
 
@@ -651,10 +651,9 @@ void *quads[4]={NULL, NULL, NULL, NULL};
       };
 
       if(spsolver>0 && spsolver<sizeof(solvname)/sizeof(char *))
-        fprintf(stderr, "\n*** unsupported sparse direct solver \"%s\" specified to splm_core(), exiting!\n\n", solvname[spsolver]);
+        SPLM_EPRINT( "\n*** unsupported sparse direct solver \"%s\" specified to splm_core(), exiting!\n\n", solvname[spsolver]);
       else
-        fprintf(stderr, "\n*** unknown sparse direct solver \"%d\" specified to splm_core(), exiting!\n\n", spsolver);
-      exit(1);
+        SPLM_FATAL("\n*** unknown sparse direct solver \"%d\" specified to splm_core(), exiting!\n\n", spsolver);
     }
   }
 
@@ -670,7 +669,7 @@ void *quads[4]={NULL, NULL, NULL, NULL};
     jacTjac.nnz=-1; // #nonzeros in J^t*J is unknown, request its computation
 
   if(!jacisan){
-    fprintf(stderr, "\n*** warning: no analytic Jacobian function supplied to splm_core(), performance will suffer!\n\n");
+    SPLM_EPRINT( "\n*** warning: no analytic Jacobian function supplied to splm_core(), performance will suffer!\n\n");
 
     fdj_data.nfeval=0;
     /* init non zero structure in jac_ccs */
@@ -716,7 +715,7 @@ void *quads[4]={NULL, NULL, NULL, NULL};
   /* ### compute e=x - f(p) and its L2 norm */
   p_eL2=(*L2xmy)(e, x, hx, nobs); /* e=x-hx, p_eL2=||e|| */
 
-  if(verbose) printf("sparseLM: initial error %g\n", p_eL2);
+  if(verbose) SPLM_PRINT("sparseLM: initial error %g\n", p_eL2);
   init_p_eL2=p_eL2;
   if(!SPLM_FINITE(p_eL2)) stop=7;
 
@@ -752,8 +751,8 @@ void *quads[4]={NULL, NULL, NULL, NULL};
       if(nconvars>0) splm_ccsm_restore_cols(&jac_ccs, nconvars, ii); // undo drop
 
       if(verbose && itno==0){
-        printf("Jacobian and approximate Hessian nonzeros: %d  %d\n", jac_ccs.colptr[nvars], jacTjac.colptr[nvars-nconvars]);
-        printf("Densities: %.3g%%  %.3g%%\n", 100*((double)jac_ccs.nnz)/(jac_ccs.nr*jac_ccs.nc),
+        SPLM_PRINT("Jacobian and approximate Hessian nonzeros: %d  %d\n", jac_ccs.colptr[nvars], jacTjac.colptr[nvars-nconvars]);
+        SPLM_PRINT("Densities: %.3g%%  %.3g%%\n", 100*((double)jac_ccs.nnz)/(jac_ccs.nr*jac_ccs.nc),
                                               100*((double)jacTjac.nnz)/(jacTjac.nr*jacTjac.nc));
       }
     }
@@ -779,8 +778,8 @@ void *quads[4]={NULL, NULL, NULL, NULL};
 //printf("%d: %.2f\n", itno, timeb-timea);
 
       if(verbose && itno==0){
-        printf("Jacobian and approximate Hessian nonzeros: %d  %d\n", jac_crs.rowptr[nobs], jacTjac.colptr[nvars-nconvars]);
-        printf("Densities: %.3g%%  %.3g%%\n", 100*((double)jac_crs.nnz)/(jac_crs.nr*jac_crs.nc),
+        SPLM_PRINT("Jacobian and approximate Hessian nonzeros: %d  %d\n", jac_crs.rowptr[nobs], jacTjac.colptr[nvars-nconvars]);
+        SPLM_PRINT("Densities: %.3g%%  %.3g%%\n", 100*((double)jac_crs.nnz)/(jac_crs.nr*jac_crs.nc),
                                               100*((double)jacTjac.nnz)/(jacTjac.nr*jacTjac.nc));
       }
     }
@@ -828,10 +827,10 @@ void *quads[4]={NULL, NULL, NULL, NULL};
 
 #if 0
 if(!(itno%10)){
-  printf("Current estimate: ");
+  SPLM_PRINT("Current estimate: ");
   for(i=0; i<nvars; ++i)
-    printf("%.9g ", p[i]);
-  printf("-- errors %.9g %0.9g\n", jacTe_inf, p_eL2);
+    SPLM_PRINT("%.9g ", p[i]);
+  SPLM_PRINT("-- errors %.9g %0.9g\n", jacTe_inf, p_eL2);
 }
 #endif
 
@@ -853,8 +852,7 @@ if(!(itno%10)){
         ii=jacTjac.colptr[j];
         jj=jacTjac.colptr[j+1]-1;
         if(ii>jj){
-          fprintf(stderr, "splm_core(): Hessian's column %d is empty, the corresponding Jacobian column is also empty?\n", j+nconvars);
-          exit(1);
+          SPLM_FATAL("splm_core(): Hessian's column %d is empty, the corresponding Jacobian column is also empty?\n", j+nconvars);
         }
 
         /* binary search for finding the element at row j */
@@ -876,8 +874,7 @@ if(!(itno%10)){
           }
 
           /* should never get here! */
-          fprintf(stderr, "splm_core() internal error: could not find the location corresponding to var %d in the Hessian's diagonal\n", j+nconvars);
-          exit(1);
+          SPLM_FATAL("splm_core() internal error: could not find the location corresponding to var %d in the Hessian's diagonal\n", j+nconvars);
         }
 nextj:  continue;
       }
@@ -928,7 +925,7 @@ nextj:  continue;
           if(verbose) /* identify the offending prediction */
             for(i=0; i<nobs; ++i)
               if(!SPLM_FINITE(hx[i]))
-                printf("sparseLM: component %d of the predicted measurement vector is invalid!\n", i);
+                SPLM_PRINT("sparseLM: component %d of the predicted measurement vector is invalid!\n", i);
 
           stop=7;
           break;
@@ -940,7 +937,7 @@ nextj:  continue;
         dF=p_eL2-pdp_eL2;
 
         if(verbose>1)
-          printf("\ndamping term %12g, gain ratio %10g, errors %10g %10g\n", mu, dL!=0.0? dF/dL : dF/DBL_EPSILON, p_eL2, pdp_eL2);
+          SPLM_PRINT("\ndamping term %12g, gain ratio %10g, errors %10g %10g\n", mu, dL!=0.0? dF/dL : dF/DBL_EPSILON, p_eL2, pdp_eL2);
 
         if(dL>0.0 && dF>0.0){ /* reduction in error, increment is accepted */
           tmp=(2.0*dF/dL-1.0);
@@ -970,7 +967,7 @@ nextj:  continue;
       muincr+=mu; // muincr:=new_mu - old_mu
       nu2=nu<<1; // 2*nu;
       if(nu2<=nu){ /* nu has wrapped around (overflown) */
-        /* fprintf(stderr, "Too many failed attempts to increase the damping factor in splm_core()! Singular Hessian matrix?\n"); */
+        /* SPLM_EPRINT( "Too many failed attempts to increase the damping factor in splm_core()! Singular Hessian matrix?\n"); */
         stop=5;
         break;
       }
@@ -1009,9 +1006,9 @@ nextj:  continue;
 
     density=jacfs->ccsfjac? ((double)jac_ccs.nnz/(jac_ccs.nr*jac_ccs.nc)) : ((double)jac_crs.nnz/(jac_crs.nr*jac_crs.nc));
     fflush(stdout);
-    fprintf(stdout, "sparseLM using %d parameters (%d constant) and %d observations\n", nvars, nconvars, nobs);
-    fprintf(stdout, "%s %s Jacobian, density %.1f%%\n\n", jacisan? "analytic" : "approximate", jacfs->ccsfjac? "CCS" : "CRS", density*100.0);
-    fprintf(stdout, "sparseLM returning after %g iter, reason %g, error %g [initial %g], %d/%d func/fjac evals, %d lin. systems\n", info[5], info[6], info[1], info[0], (int)info[7], (int)info[8], (int)info[9]);
+    SPLM_PRINT( "sparseLM using %d parameters (%d constant) and %d observations\n", nvars, nconvars, nobs);
+    SPLM_PRINT( "%s %s Jacobian, density %.1f%%\n\n", jacisan? "analytic" : "approximate", jacfs->ccsfjac? "CCS" : "CRS", density*100.0);
+    SPLM_PRINT( "sparseLM returning after %g iter, reason %g, error %g [initial %g], %d/%d func/fjac evals, %d lin. systems\n", info[5], info[6], info[1], info[0], (int)info[7], (int)info[8], (int)info[9]);
     fflush(stdout);
   }
 

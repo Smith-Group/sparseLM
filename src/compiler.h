@@ -27,6 +27,20 @@
 
 #include <math.h>
 
+#ifndef BUILDING_R_SPARSELM
+#include <stdio.h>
+#include <stdlib.h>
+#define SPLM_PRINT(...)  printf(__VA_ARGS__)
+#define SPLM_EPRINT(...) fprintf(stderr, __VA_ARGS__)
+#define SPLM_FATAL(...)  do { fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); exit(1); } while (0)
+#else
+#include <R.h>
+#include <Rinternals.h>
+#define SPLM_PRINT(...)  Rprintf(__VA_ARGS__)
+#define SPLM_EPRINT(...) REprintf(__VA_ARGS__)
+#define SPLM_FATAL(...)  Rf_error(__VA_ARGS__)
+#endif
+
 #ifdef _MSC_VER // MSVC
 
 #define inline __inline

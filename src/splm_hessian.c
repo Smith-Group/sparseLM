@@ -231,9 +231,12 @@ int *lastp;
     if(k!=AtA->nnz){
       int enough=AtA->nnz>k;
 
-      fprintf(stderr, "%sreallocated size of array A^T*A does not match the number "
-              "of detected nonzeros in splm_setup_AtA_ccsA()! [%d != %d]\n", enough? "Warning: p" : "P", AtA->nnz, k);
-      if(!enough) exit(1);
+      if(!enough){
+        SPLM_FATAL("reallocated size of array A^T*A does not match the number "
+                   "of detected nonzeros in splm_setup_AtA_ccsA()! [%d != %d]\n", AtA->nnz, k);
+      }
+      SPLM_EPRINT( "Warning: reallocated size of array A^T*A does not match the number "
+              "of detected nonzeros in splm_setup_AtA_ccsA()! [%d != %d]\n", AtA->nnz, k);
     }
   }
 }
@@ -254,8 +257,7 @@ int nc, idx, k;
 register double sum;
 
   if(AtA->nnz<=0){
-    fprintf(stderr, "product matrix must have been preallocated in splm_calc_AtA_ccsA()!\n");
-    exit(1);
+    SPLM_FATAL("product matrix must have been preallocated in splm_calc_AtA_ccsA()!\n");
   }
   AtAVal=AtA->val;
   AtAColptr=AtA->colptr; AtAColptrP1=AtAColptr+1; // for all i, AtAColptrP1[i]==AtAColptr[i+1] 
@@ -506,8 +508,7 @@ register int delta, i=0;
 
   delta=uncompressed-*prev;
   if(delta<0){
-    fprintf(stderr, "compressVB_ndecr(): cannot compress negative delta %d\n", delta);
-    exit(1);
+    SPLM_FATAL("compressVB_ndecr(): cannot compress negative delta %d\n", delta);
   }
   *prev=uncompressed;
   while(delta>=128){
@@ -605,8 +606,7 @@ register int delta, i;
   else if(delta==0){
     *compressed&=~(1<<i);
   }else{
-    fprintf(stderr, "invalid delta %d in compressVB_01()!\n", delta);
-    exit(1);
+    SPLM_FATAL("invalid delta %d in compressVB_01()!\n", delta);
   }
   if(i<7) return 0;
 
@@ -684,18 +684,16 @@ register int cursor;
     if(end!=start){ // non full
       if((uint32_t)(delta) > (uint32_t)(__MAXUINT28)){ // delta<0 || delta>__MAXUINT28
         if(delta>0)
-          fprintf(stderr, "compressS9_ndecr(): delta %d cannot be compressed with 28 bits; use vByte compression\n", delta);
+          SPLM_EPRINT( "compressS9_ndecr(): delta %d cannot be compressed with 28 bits; use vByte compression\n", delta);
         else
-          fprintf(stderr, "compressS9_ndecr(): cannot compress negative delta %d\n", delta);
-        exit(1);
+          SPLM_FATAL("compressS9_ndecr(): cannot compress negative delta %d\n", delta);
       }
       uncompressed[j]=delta;
       uncompressed[_UBUFSZ_S9NDEC-1]=end; // update end
       ++nidx;
     }
     else{
-      fprintf(stderr, "compressS9_ndecr(): Full circular buffer!\n");
-      exit(1);
+      SPLM_FATAL("compressS9_ndecr(): Full circular buffer!\n");
     }
 
     /* the maximum number of integers that can be compressed in a single word is
@@ -723,8 +721,7 @@ register int cursor;
 #if 0
         if(cursor==end){ // empty buffer
           /* should not happen */
-          fprintf(stderr, "compressS9_ndecr(): internal error, empty circular buffer!\n");
-          exit(1);
+          SPLM_FATAL("compressS9_ndecr(): internal error, empty circular buffer!\n");
         }
 #endif
         delta32=uncompressed[cursor];
@@ -878,8 +875,7 @@ register uint32_t low;
       j=1;
       break;
     default: /* should not reach this point */
-      fprintf(stderr, "uncompressS9_ndecr(): internal error (unexpected selector %d)\n", sel);
-      exit(1);
+      SPLM_FATAL("uncompressS9_ndecr(): internal error (unexpected selector %d)\n", sel);
   }
 
   tmp=*prev;
@@ -930,16 +926,14 @@ register int cursor;
     j=end++; if(end==_CBUFSZ_S9ARB) end=0; // modulo increment
     if(end!=start){ // non full
       if((uint32_t)(delta+__MAXUINT28) > (uint32_t)(__MAXUINT28<<1)){ // delta < -__MAXUINT28 || delta > __MAXUINT28
-        fprintf(stderr, "compressS9(): delta %d cannot be compressed with 28 bits; use vByte compression\n", delta);
-        exit(1);
+        SPLM_FATAL("compressS9(): delta %d cannot be compressed with 28 bits; use vByte compression\n", delta);
       }
       uncompressed[j]=delta;
       uncompressed[_UBUFSZ_S9ARB-1]=end; // update end
       ++nidx;
     }
     else{
-      fprintf(stderr, "compressS9(): Full circular buffer!\n");
-      exit(1);
+      SPLM_FATAL("compressS9(): Full circular buffer!\n");
     }
 
     /* the maximum number of integers that can be compressed in a single word is
@@ -967,8 +961,7 @@ register int cursor;
 #if 0
         if(cursor==end){ // empty buffer
           /* should not happen */
-          fprintf(stderr, "compressS9(): internal error, empty circular buffer!\n");
-          exit(1);
+          SPLM_FATAL("compressS9(): internal error, empty circular buffer!\n");
         }
 #endif
         delta32=uncompressed[cursor];
@@ -1102,8 +1095,7 @@ register uint32_t low;
       j=1;
       break;
     default: /* should not reach this point */
-      fprintf(stderr, "uncompressS9(): internal error (unexpected selector %d)\n", sel);
-      exit(1);
+      SPLM_FATAL("uncompressS9(): internal error (unexpected selector %d)\n", sel);
   }
 
   tmp=*prev;
@@ -1157,8 +1149,7 @@ int previi, prevjj, lastlen=0, lastii=0, lastjj=0; // note: previi, prevjj have 
 int totlen=0;
 
   if(AtA->nnz<=0){
-    fprintf(stderr, "product matrix must have been preallocated in splm_get_AtA_ccsA_quads()!\n");
-    exit(1);
+    SPLM_FATAL("product matrix must have been preallocated in splm_get_AtA_ccsA_quads()!\n");
   }
   AtAColptr=AtA->colptr; AtAColptrP1=AtAColptr+1; // for all i, AtAColptrP1[i]==AtAColptr[i+1] 
   AtARowidx=AtA->rowidx;
@@ -1227,8 +1218,7 @@ int totlen=0;
               lenptr=(uint32_t *)realloc(lenptr, (lensz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
               if(lenptr==NULL){
-                fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [len]\n", lensz);
-                exit(1);
+                SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [len]\n", lensz);
               }
             }
             if(unlikely(iiN>=iisz)){
@@ -1239,8 +1229,7 @@ int totlen=0;
               iiptr=(uint32_t *)realloc(iiptr, (iisz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
               if(iiptr==NULL){
-                fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [i]\n", iisz);
-                exit(1);
+                SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [i]\n", iisz);
               }
             }
             if(unlikely(jjN>=jjsz)){
@@ -1251,8 +1240,7 @@ int totlen=0;
               jjptr=(uint32_t *)realloc(jjptr, (jjsz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
               if(jjptr==NULL){
-                fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [j]\n", jjsz);
-                exit(1);
+                SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [j]\n", jjsz);
               }
             }
             if(unlikely(kN>=ksz)){
@@ -1263,8 +1251,7 @@ int totlen=0;
               kptr=(uint32_t *)realloc(kptr, (ksz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
               if(kptr==NULL){
-                fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [k]\n", ksz);
-                exit(1);
+                SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_ccsA_quads() [k]\n", ksz);
               }
             }
 
@@ -1331,12 +1318,11 @@ int totlen=0;
   kptr=(uint32_t *)realloc(kptr, kN*sizeof(uint32_t));
 #endif
   if(!lenptr || !iiptr || !jjptr || !kptr){
-    fprintf(stderr, "one of the final memory reallocation requests failed in splm_get_AtA_ccsA_quads()\n");
-    exit(1);
+    SPLM_FATAL("one of the final memory reallocation requests failed in splm_get_AtA_ccsA_quads()\n");
   }
 
 #if 0
-  fprintf(stderr, "splm_get_AtA_ccsA_quads(): found %d quads, avg. length %.2lf, %s compressed size %.2lf Mb, uncompressed %.2lf\n",
+  SPLM_EPRINT( "splm_get_AtA_ccsA_quads(): found %d quads, avg. length %.2lf, %s compressed size %.2lf Mb, uncompressed %.2lf\n",
           nquads, totlen/(double)nquads, 
 #ifdef USE_VBYTE_COMPRESSION
           "vByte",
@@ -1618,7 +1604,7 @@ int totlen=0;
 #if 0
           if(high==AtAColptrP1[j] || AtARowidx[high]!=i){
             /* should not reach this point... */
-            fprintf(stderr, "splm_get_AtA_crsA_quads() internal error: no element in column %d of A^t*A "
+            SPLM_EPRINT( "splm_get_AtA_crsA_quads() internal error: no element in column %d of A^t*A "
                             "with row index equal to %d found!\n\tmalformed Jacobian?\n", i+zerocols, j+zerocols);
             exit(1);
           }
@@ -1639,8 +1625,7 @@ int totlen=0;
             lenptr=(uint32_t *)realloc(lenptr, (lensz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
             if(lenptr==NULL){
-              fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [len]\n", lensz);
-              exit(1);
+              SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [len]\n", lensz);
             }
           }
           if(unlikely(r1N>=r1sz)){
@@ -1651,8 +1636,7 @@ int totlen=0;
             r1ptr=(uint32_t *)realloc(r1ptr, (r1sz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
             if(r1ptr==NULL){
-              fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [r1]\n", r1sz);
-              exit(1);
+              SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [r1]\n", r1sz);
             }
           }
           if(unlikely(r2N>=r2sz)){
@@ -1663,8 +1647,7 @@ int totlen=0;
             r2ptr=(uint32_t *)realloc(r2ptr, (r2sz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
             if(r2ptr==NULL){
-              fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [r2]\n", r2sz);
-              exit(1);
+              SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [r2]\n", r2sz);
             }
           }
           if(unlikely(idxN>=idxsz)){
@@ -1675,8 +1658,7 @@ int totlen=0;
             idxptr=(uint32_t *)realloc(idxptr, (idxsz+_MAXCOMPS9)*sizeof(uint32_t));
 #endif
             if(idxptr==NULL){
-              fprintf(stderr, "memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [idx]\n", idxsz);
-              exit(1);
+              SPLM_FATAL("memory reallocation request for %d bytes failed in splm_get_AtA_crsA_quads() [idx]\n", idxsz);
             }
           }
 
@@ -1728,12 +1710,11 @@ int totlen=0;
   idxptr=(uint32_t *)realloc(idxptr, idxN*sizeof(uint32_t));
 #endif /* USE_VBYTE_COMPRESSION */
   if(!lenptr || !r1ptr || !r2ptr || !idxptr){
-    fprintf(stderr, "one of the final memory reallocation requests failed in splm_get_AtA_crsA_quads()\n");
-    exit(1);
+    SPLM_FATAL("one of the final memory reallocation requests failed in splm_get_AtA_crsA_quads()\n");
   }
 
 #if 0
-  fprintf(stderr, "splm_get_AtA_crsA_quads(): found %d quads, avg. length %.2lf, %s compressed size %.2lf Mb, uncompressed %.2lf\n",
+  SPLM_EPRINT( "splm_get_AtA_crsA_quads(): found %d quads, avg. length %.2lf, %s compressed size %.2lf Mb, uncompressed %.2lf\n",
           nquads, totlen/(double)nquads,
 #ifdef USE_VBYTE_COMPRESSION
           "vByte",
@@ -1948,8 +1929,7 @@ struct splm_ccsm ccsA;
   colcounts=(int *)calloc(nc, sizeof(int)); /* init to zero */
   AtRowptr=(int *)malloc((nc+1+nnz)*sizeof(int));
   if(!colcounts || !AtRowptr){
-    fprintf(stderr, "memory allocation request failed in splm_setup_AtA_crsA() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_setup_AtA_crsA() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
   AtColidx=AtRowptr+nc+1;
   
@@ -2099,7 +2079,7 @@ int *ARowptr, *ARowptrP1, *AColidx, *AtAColptr, *AtAColptrP1, *AtARowidx, *AtARo
 #if 0
           if(high==AtAColptrP1[j] || AtARowidx[high]!=i){
             /* should not reach this point... */
-            fprintf(stderr, "splm_calc_AtAx_crsA() internal error: no element in column %d of A^t*A "
+            SPLM_EPRINT( "splm_calc_AtAx_crsA() internal error: no element in column %d of A^t*A "
                             "with row index equal to %d found!\n\tmalformed Jacobian?\n", i+zerocols, j+zerocols);
             exit(1);
           }

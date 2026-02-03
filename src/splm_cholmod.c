@@ -71,8 +71,7 @@ cholmod_dense *cmx;
 struct solvstat *stat;
 
   if(A && A->nr!=A->nc){
-    fprintf(stderr, "Non-square matrix passed to splm_Axb_CHOLMOD()!\n");
-    exit(1);
+    SPLM_FATAL("Non-square matrix passed to splm_Axb_CHOLMOD()!\n");
   }
 
   switch(what){
@@ -113,12 +112,11 @@ struct solvstat *stat;
       stat->L=cholmod_analyze(&stat->cmA, &stat->c);
 
 #if 0
-      printf("Ordering method %d selected by cholmod_analyze()\n", stat->c.method[stat->c.selected].ordering);
+      SPLM_PRINT("Ordering method %d selected by cholmod_analyze()\n", stat->c.method[stat->c.selected].ordering);
 #endif
 
       if(!stat->L){
-        fprintf(stderr, "Unsuccessful termination of cholmod_analyze()\n");
-        exit(1);
+        SPLM_FATAL("Unsuccessful termination of cholmod_analyze()\n");
       }
 
       /* prepare for solving linear system */
@@ -138,7 +136,7 @@ struct solvstat *stat;
       /* factorize matrix */
       i=cholmod_factorize(&stat->cmA, stat->L, &stat->c);
       if(!i){
-        fprintf(stderr, "Unsuccessful termination of cholmod_factorize()\n");
+        SPLM_EPRINT( "Unsuccessful termination of cholmod_factorize()\n");
 
         //exit(1);
         ret=0;
@@ -176,8 +174,7 @@ struct solvstat *stat;
       break;
 
     default:
-      fprintf(stderr, "Unknown mode %d in splm_Axb_CHOLMOD()!\n", what);
-      exit(1);
+      SPLM_FATAL("Unknown mode %d in splm_Axb_CHOLMOD()!\n", what);
   }
 
   /* cleanup */

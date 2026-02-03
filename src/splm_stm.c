@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "compiler.h"
 #include "splm.h"
 
 
@@ -36,8 +37,7 @@ void splm_stm_alloc(struct splm_stm *sm, int nr, int nc, int maxnnz)
   sm->rowidx=(int *)malloc(maxnnz*sizeof(int));
   sm->colidx=(int *)malloc(maxnnz*sizeof(int));
   if(!sm->rowidx || !sm->colidx){
-    fprintf(stderr, "memory allocation request failed in splm_stm_alloc() [nr=%d, nc=%d, maxnnz=%d]\n", nr, nc, maxnnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm_alloc() [nr=%d, nc=%d, maxnnz=%d]\n", nr, nc, maxnnz);
   }
 }
 
@@ -53,8 +53,7 @@ void splm_stm_allocval(struct splm_stm *sm, int nr, int nc, int maxnnz)
   sm->colidx=(int *)malloc(maxnnz*sizeof(int));
   sm->val=(double *)malloc(maxnnz*sizeof(double));
   if(!sm->rowidx || !sm->colidx || !sm->val){
-    fprintf(stderr, "memory allocation request failed in splm_stm_allocval() [nr=%d, nc=%d, maxnnz=%d]\n", nr, nc, maxnnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm_allocval() [nr=%d, nc=%d, maxnnz=%d]\n", nr, nc, maxnnz);
   }
 }
 
@@ -142,8 +141,7 @@ register double *ccsv;
   ccs->nr=nr; ccs->nc=nc; // ensure that ccs has the correct dimensions
 
   if((colcounts=(int *)calloc(nc, sizeof(int)))==NULL){ // init to zero
-    fprintf(stderr, "memory allocation request failed in splm_stm2ccsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm2ccsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 
   colidx=st->colidx; strowidx=st->rowidx;
@@ -180,8 +178,7 @@ register double *ccsv;
   /* allocate work arrays */
   tmpidx=(int *)malloc(nr*sizeof(int));
   if(!tmpidx){
-    fprintf(stderr, "memory allocation request failed in splm_stm2ccsm()\n");
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm2ccsm()\n");
   }
 
   /* sort row indices using linear bucket sort */
@@ -264,8 +261,7 @@ register double *crsv;
   crs->nr=nr; crs->nc=nc; // ensure that crs has the correct dimensions
 
   if((rowcounts=(int *)calloc(nr, sizeof(int)))==NULL){ // init to zero
-    fprintf(stderr, "memory allocation request failed in splm_stm2crsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm2crsm() [nr=%d, nc=%d, nnz=%d]\n", nr, nc, nnz);
   }
 
   rowidx=st->rowidx; stcolidx=st->colidx;
@@ -301,8 +297,7 @@ register double *crsv;
   /* allocate work arrays */
   tmpidx=(int *)malloc(nc*sizeof(int));
   if(!tmpidx){
-    fprintf(stderr, "memory allocation request failed in splm_stm2crsm()\n");
-    exit(1);
+    SPLM_FATAL("memory allocation request failed in splm_stm2crsm()\n");
   }
 
   /* sort column indices using linear bucket sort */
@@ -358,4 +353,3 @@ struct splm_stm st;
 
   splm_stm2crsm(&st, crs);
 }
-

@@ -48,12 +48,12 @@ LARGE_INTEGER tpsec;
 LARGE_INTEGER time;
 
   if(!QueryPerformanceFrequency(&tpsec)){
-    fprintf(stderr, "QueryPerformanceFrequency() failed (error %lu)\n", GetLastError());
+    SPLM_EPRINT( "QueryPerformanceFrequency() failed (error %lu)\n", GetLastError());
     return 0;
   }
 
   if(!QueryPerformanceCounter(&time)){
-    fprintf(stderr, "QueryPerformanceCounter() failed (error %lu)\n", GetLastError());
+    SPLM_EPRINT( "QueryPerformanceCounter() failed (error %lu)\n", GetLastError());
     return 0;
   }
 
