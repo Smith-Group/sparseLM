@@ -1,4 +1,4 @@
-#' @useDynLib sparseLM
+#' @useDynLib sparseLM, .registration = TRUE
 #' @import Matrix
 NULL
 
@@ -40,7 +40,7 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 	func1 <- function(p) func(p, ...)
 	fjac1 <- function(p) fjac(p, ...)
 	
-	out <- .Call("sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), new.env(), PACKAGE = "sparseLM")
+	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), new.env(), PACKAGE = "sparseLM")
 
 	names(out) <- c("par", "niter", "info")
 	names(out[["info"]]) <- c("rssinit", "rss", "||J^T e||_inf", "||dp||_2", "mu/max[J^T J]_ii", "niter", "term", "nfunc", "nfjac", "nsys")

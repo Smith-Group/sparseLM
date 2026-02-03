@@ -27,11 +27,11 @@
 #'
 #' @export
 add_assign_col_inplace <- function(x, i, j, value, validate = TRUE) {
-	.Call("add_assign_col_inplace", x, i, j, value, validate)
+	.Call("C_add_assign_col_inplace", x, i, j, value, validate, PACKAGE = "sparseLM")
 }
 
 #' @rdname add_assign_col_inplace
 #' @export
 add_assign_col_inplace_unsafe <- function(x, i, j, value) {
-	.Call("add_assign_col_inplace", x, i, j, value, FALSE)
+	.Call("C_add_assign_col_inplace", x, i, j, value, FALSE, PACKAGE = "sparseLM")
 }
