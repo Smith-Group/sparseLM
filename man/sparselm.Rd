@@ -33,7 +33,7 @@ sparselm(
 
 \item{itmax}{maximum number of iterations}
 
-\item{opts}{minim. options \link{mu, epsilon1, epsilon2, epsilon3, delta, spsolver}, not currently implemented!}
+\item{opts}{minim. options \code{mu, epsilon1, epsilon2, epsilon3, delta, spsolver}, not currently implemented!}
 
 \item{dif}{logical indicating whether to use finite differences}
 
