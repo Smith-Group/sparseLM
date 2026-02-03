@@ -31,6 +31,8 @@ sparselm(
 
 \item{JtJnnz}{number of nonzeros for the product J^t*J, -1 if unknown}
 
+\item{nconvars}{number of constrained variables (currently reserved for future use)}
+
 \item{itmax}{maximum number of iterations}
 
 \item{opts}{minim. options \code{mu, epsilon1, epsilon2, epsilon3, delta, spsolver}, not currently implemented!}

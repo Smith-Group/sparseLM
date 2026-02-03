@@ -26,6 +26,7 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' @param fjac function to supply the nonzero pattern of the sparse Jacobian of func and optionally evaluate it at p, returning nobs by nvars dgCMatrix
 #' @param Jnnz number of nonzeros for the Jacobian J
 #' @param JtJnnz number of nonzeros for the product J^t*J, -1 if unknown
+#' @param nconvars number of constrained variables (currently reserved for future use)
 #' @param itmax maximum number of iterations
 #' @param opts minim. options \code{mu, epsilon1, epsilon2, epsilon3, delta, spsolver}, not currently implemented!
 #' @param dif logical indicating whether to use finite differences
