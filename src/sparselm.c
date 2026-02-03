@@ -147,9 +147,13 @@ void sparselm_func(double *p, double *hx, int nvars, int nobs, void *adata) {
 	SEXP R_fcall = PROTECT(lang2(sparselm_data->func, p_obj));
 	SEXP hx_obj = PROTECT(eval(R_fcall, sparselm_data->rho));
 	
-	if (!IS_NUMERIC(hx_obj) || length(hx_obj) != nobs) {
-        error("evaluation of fn function returns non-sensible value!");
+	if (length(hx_obj) != nobs) {
+        error("evaluation of func function not expected length!");
     }
+	
+	if (!Rf_isReal(hx_obj)) {
+		error("evaluation of func function returns non-real value!");
+	}
     
     for (i = 0; i < nobs; ++i) {
 		hx[i] = REAL(hx_obj)[i];
