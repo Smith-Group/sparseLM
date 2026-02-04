@@ -9,6 +9,7 @@ Authors@R: c(
     )
 Maintainer: Colin Smith <colin.smith@wesleyan.edu>
 Description: This package uses the Levenberg-Marquardt algorithm to solve nonlinear least squares problems having a sparse Jacobian. It does so using the C sparseLM and CHOLMOD libraries.
+URL: https://users.ics.forth.gr/~lourakis/sparseLM/
 Depends: Matrix
 LinkingTo: Matrix
 License: GPL-2
