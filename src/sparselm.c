@@ -250,12 +250,12 @@ SEXP sparselm(SEXP func, SEXP fjac, SEXP p, SEXP x, SEXP nconvars, SEXP Jnnz, SE
 		return R_NilValue;
 	}
 	if (!Rf_isInteger(JtJnnz) || Rf_length(JtJnnz) != 1) {
-		Rf_error("JtJnnz not positive integer of length 1");
+		Rf_error("JtJnnz must be -1 or a positive integer of length 1");
 		UNPROTECT(nprotect);
 		return R_NilValue;
 	}
-	if (INTEGER(JtJnnz)[0] < 1) {
-		Rf_error("JtJnnz not positive integer of length 1");
+	if (INTEGER(JtJnnz)[0] < 1 && INTEGER(JtJnnz)[0] != -1) {
+		Rf_error("JtJnnz must be -1 or a positive integer of length 1");
 		UNPROTECT(nprotect);
 		return R_NilValue;
 	}
