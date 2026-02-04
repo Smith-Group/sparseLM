@@ -1,0 +1,21 @@
+citHeader("To cite sparseLM in publications use:")
+
+bibentry(
+  bibtype = "InProceedings",
+  title = "Sparse Non-linear Least Squares Optimization for Geometric Vision",
+  author = person(given = "Manolis I. A.", family = "Lourakis"),
+  booktitle = "Computer Vision - ECCV 2010: 11th European Conference on Computer Vision, Heraklion, Crete, Greece, September 5-11, 2010, Proceedings, Part II",
+  editor = c(
+    person(given = "Kostas", family = "Daniilidis"),
+    person(given = "Petros", family = "Maragos"),
+    person(given = "Nikos", family = "Paragios")
+  ),
+  series = "Lecture Notes in Computer Science",
+  volume = "6312",
+  pages = "43-56",
+  year = "2010",
+  publisher = "Springer",
+  address = "Berlin, Heidelberg",
+  doi = "10.1007/978-3-642-15552-9_4",
+  url = "https://doi.org/10.1007/978-3-642-15552-9_4"
+)
