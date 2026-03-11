@@ -90,10 +90,19 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 
 	p <- as.numeric(p)
 	x <- as.numeric(x)
+	nvars <- length(p)
+	nobs <- length(x)
 	ctx <- new.env(parent = parent.frame())
 	ctx$callback_error <- NULL
 	ctx$last_jac <- NULL
 	ctx$use_prefetched_jac <- FALSE
+	validate_func_result <- function(value) {
+		value <- as.numeric(value)
+		if (length(value) != nobs) {
+			stop("evaluation of func function not expected length!", call. = FALSE)
+		}
+		value
+	}
 	normalize_jac <- function(jac) {
 		if (inherits(jac, "dgCMatrix")) {
 			jac
@@ -101,9 +110,32 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 			methods::as(methods::as(jac, "generalMatrix"), "CsparseMatrix")
 		}
 	}
+	validate_jac <- function(jac) {
+		jac <- normalize_jac(jac)
+		if (!identical(dim(jac), c(nobs, nvars))) {
+			stop("fjac did not return expected dgCMatrix object", call. = FALSE)
+		}
+		if (length(jac@x) != Jnnz || length(jac@i) != Jnnz || length(jac@p) != nvars + 1L) {
+			stop("fjac did not return expected dgCMatrix object", call. = FALSE)
+		}
+		if (jac@p[1] != 0L || jac@p[nvars + 1L] != Jnnz || any(diff(jac@p) < 0L)) {
+			stop("fjac did not return expected dgCMatrix object", call. = FALSE)
+		}
+		for (col in seq_len(nvars)) {
+			start <- jac@p[col] + 1L
+			end <- jac@p[col + 1L]
+			if (start <= end) {
+				rows <- jac@i[start:end]
+				if (any(rows < 0L) || any(rows >= nobs) || any(diff(rows) <= 0L)) {
+					stop("fjac did not return expected dgCMatrix object", call. = FALSE)
+				}
+			}
+		}
+		jac
+	}
 
 	prefetched_jac <- tryCatch(
-		normalize_jac(fjac(p, ...)),
+		validate_jac(fjac(p, ...)),
 		error = function(e) {
 			ctx$callback_error <- conditionMessage(e)
 			NULL
@@ -120,7 +152,7 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 			return(rep(NaN, length(x)))
 		}
 		tryCatch(
-			as.numeric(func(p, ...)),
+			validate_func_result(func(p, ...)),
 			error = function(e) {
 				ctx$callback_error <- conditionMessage(e)
 				rep(NaN, length(x))
@@ -137,7 +169,7 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 		}
 		tryCatch(
 			{
-				jac <- normalize_jac(fjac(p, ...))
+				jac <- validate_jac(fjac(p, ...))
 				ctx$last_jac <- jac
 				jac
 			},
