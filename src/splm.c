@@ -1025,7 +1025,7 @@ nextj:  continue;
   }
 
   /* free solver's state */
-  if(itno) (*solver)(NULL, NULL, &solvstate, 3, NULL);
+  if(solver && solvstate) (*solver)(NULL, NULL, &solvstate, 3, NULL);
 
 #ifdef USE_ATA_QUADS
   if(quads[0]){
@@ -1097,4 +1097,3 @@ struct splm_fjacfuncs fjf;
   return splm_core(func, &fjf, fjac? SPLM_ZPJAC : SPLM_NOJAC, p, x, nvars, nconvars, nobs,
                         Jnnz, JtJnnz, itmax, opts, info, adata);
 }
-
