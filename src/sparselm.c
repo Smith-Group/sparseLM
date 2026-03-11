@@ -197,6 +197,9 @@ SEXP sparselm(SEXP func, SEXP fjac, SEXP p, SEXP x, SEXP nconvars, SEXP Jnnz, SE
 	SparseLMData sparselm_data;
  	//double opts_vec[SPLM_OPTS_SZ];
  	double info_vec[SPLM_INFO_SZ];
+	for (int i = 0; i < SPLM_INFO_SZ; i++) {
+		info_vec[i] = NA_REAL;
+	}
 	
 	if (!isEnvironment(rho)) {
 		Rf_error("rho is not an environment");
