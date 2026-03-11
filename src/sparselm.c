@@ -112,18 +112,23 @@ int sparselm_dgCMatrix_to_splm_ccsm(SEXP dgCMatrix, struct splm_ccsm *ccsm) {
 		}
 	}
 	
-	for (i = 0; i < ccsm->nnz; i++) {
-		if (i_ptr[i] < 0 || i_ptr[i] >= ccsm->nr) {
-			warning("i_slot");
-			UNPROTECT(nprotect);
-			return 1;
-		}
-		ccsm->rowidx[i] = i_ptr[i];
-		ccsm->val[i] = x_ptr[i];
-	}
-	
 	for (i = 0; i <= ccsm->nc; i++) {
 		ccsm->colptr[i] = p_ptr[i];
+	}
+
+	for (i = 0; i < ccsm->nc; i++) {
+		int k;
+		int prev_rowidx = -1;
+		for (k = p_ptr[i]; k < p_ptr[i + 1]; k++) {
+			if (i_ptr[k] < 0 || i_ptr[k] >= ccsm->nr || i_ptr[k] <= prev_rowidx) {
+				warning("i_slot");
+				UNPROTECT(nprotect);
+				return 1;
+			}
+			prev_rowidx = i_ptr[k];
+			ccsm->rowidx[k] = i_ptr[k];
+			ccsm->val[k] = x_ptr[k];
+		}
 	}
 	
 	UNPROTECT(nprotect);
