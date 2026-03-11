@@ -26,7 +26,6 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' @param func functional relation describing measurements given a parameter vector p, returning vector length nobs
 #' @param fjac function to supply the nonzero pattern of the sparse Jacobian of func and optionally evaluate it at p, returning nobs by nvars dgCMatrix
 #' @param Jnnz number of nonzeros for the Jacobian J
-#' @param JtJnnz number of nonzeros for the product J^t*J, -1 if unknown
 #' @param nconvars number of constrained variables (currently reserved for future use)
 #' @param itmax maximum number of iterations
 #' @param opts minim. options \code{mu, epsilon1, epsilon2, epsilon3, delta, spsolver}, not currently implemented!
@@ -74,7 +73,7 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' }
 #'
 #' fit <- sparselm(p0, y, func, fjac,
-#'                 Jnnz = length(i), JtJnnz = -1,
+#'                 Jnnz = length(i),
 #'                 nconvars = 0, t = t)
 #' Jpat
 #' fit$par
@@ -86,7 +85,7 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' lines(t, f1, col = "red")
 #'
 #' @export
-sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, opts=sparselm.opts(), dif=FALSE, ...) {
+sparselm <- function(p, x, func, fjac, Jnnz, nconvars=0, itmax=100, opts=sparselm.opts(), dif=FALSE, ...) {
 
 	p <- as.numeric(p)
 	x <- as.numeric(x)
@@ -213,7 +212,7 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 		)
 	}
 	
-	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), ctx, PACKAGE = "sparseLM")
+	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), -1L, as.integer(itmax), as.numeric(opts), as.logical(dif), ctx, PACKAGE = "sparseLM")
 	if (!is.null(ctx$callback_error)) {
 		stop(ctx$callback_error, call. = FALSE)
 	}

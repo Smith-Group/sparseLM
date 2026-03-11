@@ -10,7 +10,6 @@ sparselm(
   func,
   fjac,
   Jnnz,
-  JtJnnz = -1,
   nconvars = 0,
   itmax = 100,
   opts = sparselm.opts(),
@@ -28,8 +27,6 @@ sparselm(
 \item{fjac}{function to supply the nonzero pattern of the sparse Jacobian of func and optionally evaluate it at p, returning nobs by nvars dgCMatrix}
 
 \item{Jnnz}{number of nonzeros for the Jacobian J}
-
-\item{JtJnnz}{number of nonzeros for the product J^t*J, -1 if unknown}
 
 \item{nconvars}{number of constrained variables (currently reserved for future use)}
 
@@ -86,7 +83,7 @@ fjac <- function(p, t, ...) {
 }
 
 fit <- sparselm(p0, y, func, fjac,
-                Jnnz = length(i), JtJnnz = -1,
+                Jnnz = length(i),
                 nconvars = 0, t = t)
 Jpat
 fit$par
