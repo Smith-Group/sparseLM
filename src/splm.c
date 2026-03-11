@@ -651,7 +651,7 @@ void *quads[4]={NULL, NULL, NULL, NULL};
       };
 
       if(spsolver>0 && spsolver<sizeof(solvname)/sizeof(char *))
-        SPLM_EPRINT( "\n*** unsupported sparse direct solver \"%s\" specified to splm_core(), exiting!\n\n", solvname[spsolver]);
+        SPLM_FATAL("\n*** unsupported sparse direct solver \"%s\" specified to splm_core(), exiting!\n\n", solvname[spsolver]);
       else
         SPLM_FATAL("\n*** unknown sparse direct solver \"%d\" specified to splm_core(), exiting!\n\n", spsolver);
     }
