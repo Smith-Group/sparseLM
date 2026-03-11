@@ -89,11 +89,68 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 
 	p <- as.numeric(p)
 	x <- as.numeric(x)
+	ctx <- new.env(parent = parent.frame())
+	ctx$callback_error <- NULL
+	ctx$last_jac <- NULL
+	ctx$use_prefetched_jac <- FALSE
+	normalize_jac <- function(jac) {
+		if (inherits(jac, "dgCMatrix")) {
+			jac
+		} else {
+			methods::as(methods::as(jac, "generalMatrix"), "CsparseMatrix")
+		}
+	}
 
-	func1 <- function(p) as.numeric(func(p, ...))
-	fjac1 <- function(p) fjac(p, ...)
+	prefetched_jac <- tryCatch(
+		normalize_jac(fjac(p, ...)),
+		error = function(e) {
+			ctx$callback_error <- conditionMessage(e)
+			NULL
+		}
+	)
+	if (!is.null(ctx$callback_error)) {
+		stop(ctx$callback_error, call. = FALSE)
+	}
+	ctx$last_jac <- prefetched_jac
+	ctx$use_prefetched_jac <- TRUE
+
+	func1 <- function(p) {
+		if (!is.null(ctx$callback_error)) {
+			return(rep(NaN, length(x)))
+		}
+		tryCatch(
+			as.numeric(func(p, ...)),
+			error = function(e) {
+				ctx$callback_error <- conditionMessage(e)
+				rep(NaN, length(x))
+			}
+		)
+	}
+	fjac1 <- function(p) {
+		if (ctx$use_prefetched_jac) {
+			ctx$use_prefetched_jac <- FALSE
+			return(ctx$last_jac)
+		}
+		if (!is.null(ctx$callback_error)) {
+			return(ctx$last_jac)
+		}
+		tryCatch(
+			{
+				jac <- normalize_jac(fjac(p, ...))
+				ctx$last_jac <- jac
+				jac
+			},
+			error = function(e) {
+				ctx$callback_error <- conditionMessage(e)
+				ctx$last_jac
+			}
+		)
+	}
 	
-	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), new.env(), PACKAGE = "sparseLM")
+	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), ctx, PACKAGE = "sparseLM")
+	if (!is.null(ctx$callback_error)) {
+		stop(ctx$callback_error, call. = FALSE)
+	}
 
 	names(out) <- c("par", "niter", "info")
 	names(out[["info"]]) <- c("rssinit", "rss", "||J^T e||_inf", "||dp||_2", "mu/max[J^T J]_ii", "niter", "term", "nfunc", "nfjac", "nsys")
