@@ -1,5 +1,6 @@
 #' @useDynLib sparseLM, .registration = TRUE
 #' @import Matrix
+#' @importFrom methods as
 NULL
 
 #' Sparse Levenberg-Marquardt Algorithm Options

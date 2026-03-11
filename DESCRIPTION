@@ -10,6 +10,7 @@ Authors@R: c(
 Description: Uses the Levenberg-Marquardt algorithm to solve nonlinear least squares problems having a sparse Jacobian. It does so using the C sparseLM and CHOLMOD libraries.
 URL: https://users.ics.forth.gr/~lourakis/sparseLM/
 Depends: Matrix
+Imports: methods
 LinkingTo: Matrix
 License: GPL-2
 Encoding: UTF-8
