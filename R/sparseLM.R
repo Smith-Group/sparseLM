@@ -87,7 +87,10 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' @export
 sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, opts=sparselm.opts(), dif=FALSE, ...) {
 
-	func1 <- function(p) func(p, ...)
+	p <- as.numeric(p)
+	x <- as.numeric(x)
+
+	func1 <- function(p) as.numeric(func(p, ...))
 	fjac1 <- function(p) fjac(p, ...)
 	
 	out <- .Call("C_sparselm", func1, fjac1, p, x, as.integer(nconvars), as.integer(Jnnz), as.integer(JtJnnz), as.integer(itmax), as.numeric(opts), as.logical(dif), new.env(), PACKAGE = "sparseLM")
