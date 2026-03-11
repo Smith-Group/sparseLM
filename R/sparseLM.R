@@ -92,10 +92,14 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 	x <- as.numeric(x)
 	nvars <- length(p)
 	nobs <- length(x)
+	opts_num <- as.numeric(opts)
+	eps3 <- if (length(opts_num) >= 4L) abs(opts_num[4L]) else NA_real_
 	ctx <- new.env(parent = parent.frame())
 	ctx$callback_error <- NULL
 	ctx$last_jac <- NULL
 	ctx$use_prefetched_jac <- FALSE
+	ctx$last_func <- NULL
+	ctx$use_prefetched_func <- FALSE
 	validate_func_result <- function(value) {
 		value <- as.numeric(value)
 		if (length(value) != nobs) {
@@ -133,9 +137,8 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 		}
 		jac
 	}
-
-	prefetched_jac <- tryCatch(
-		validate_jac(fjac(p, ...)),
+	prefetched_func <- tryCatch(
+		validate_func_result(func(p, ...)),
 		error = function(e) {
 			ctx$callback_error <- conditionMessage(e)
 			NULL
@@ -144,15 +147,42 @@ sparselm <- function(p, x, func, fjac, Jnnz, JtJnnz=-1, nconvars=0, itmax=100, o
 	if (!is.null(ctx$callback_error)) {
 		stop(ctx$callback_error, call. = FALSE)
 	}
-	ctx$last_jac <- prefetched_jac
-	ctx$use_prefetched_jac <- TRUE
+	ctx$last_func <- prefetched_func
+	ctx$use_prefetched_func <- TRUE
+	need_initial_jac <- nobs >= nvars &&
+		all(is.finite(prefetched_func)) &&
+		!is.na(eps3) &&
+		sum((x - prefetched_func)^2) > eps3
+
+	if (need_initial_jac) {
+		prefetched_jac <- tryCatch(
+			validate_jac(fjac(p, ...)),
+			error = function(e) {
+				ctx$callback_error <- conditionMessage(e)
+				NULL
+			}
+		)
+		if (!is.null(ctx$callback_error)) {
+			stop(ctx$callback_error, call. = FALSE)
+		}
+		ctx$last_jac <- prefetched_jac
+		ctx$use_prefetched_jac <- TRUE
+	}
 
 	func1 <- function(p) {
+		if (ctx$use_prefetched_func) {
+			ctx$use_prefetched_func <- FALSE
+			return(ctx$last_func)
+		}
 		if (!is.null(ctx$callback_error)) {
 			return(rep(NaN, length(x)))
 		}
 		tryCatch(
-			validate_func_result(func(p, ...)),
+			{
+				value <- validate_func_result(func(p, ...))
+				ctx$last_func <- value
+				value
+			},
 			error = function(e) {
 				ctx$callback_error <- conditionMessage(e)
 				rep(NaN, length(x))
