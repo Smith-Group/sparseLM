@@ -1,0 +1,18 @@
+destination: ../smith-group.github.io/sparseLM
+url: https://smith-group.github.io/sparseLM/
+template:
+  bootstrap: 5
+authors:
+  Colin Smith:
+    href: http://smithlab.wesleyan.edu
+  Manolis Lourakis:
+    href: https://www.ics.forth.gr/person/Lourakis/Manolis
+reference:
+  - title: Fitting
+    contents:
+      - sparselm
+      - sparselm.opts
+  - title: Sparse matrix utilities
+    contents:
+      - add_assign_col_inplace
+      - add_assign_col_inplace_unsafe
