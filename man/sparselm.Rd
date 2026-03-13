@@ -20,7 +20,8 @@ sparselm(
 \arguments{
 \item{p}{initial parameter estimates length nvars}
 
-\item{x}{measurement vector length nobs}
+\item{x}{measurement vector length nobs; \code{length(x)} must be at least
+\code{length(p)}}
 
 \item{func}{functional relation describing measurements given a parameter vector p, returning vector length nobs}
 

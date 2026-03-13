@@ -23,7 +23,8 @@ sparselm.opts <- function(mu=1e-03, epsilon1=1e-12, epsilon2=1e-12, epsilon3=1e-
 #' Nonlinear Least Squares Fit with Sparse Levenberg-Marquardt Algorithm
 #'
 #' @param p initial parameter estimates length nvars
-#' @param x measurement vector length nobs
+#' @param x measurement vector length nobs; \code{length(x)} must be at least
+#'   \code{length(p)}
 #' @param func functional relation describing measurements given a parameter vector p, returning vector length nobs
 #' @param fjac function to supply the nonzero pattern of the sparse Jacobian of func and optionally evaluate it at p, returning nobs by nvars dgCMatrix
 #' @param Jnnz number of nonzeros for the Jacobian J
@@ -92,6 +93,16 @@ sparselm <- function(p, x, func, fjac, Jnnz, nconvars=0, itmax=100, opts=sparsel
 	x <- as.numeric(x)
 	nvars <- length(p)
 	nobs <- length(x)
+	if (nobs < nvars) {
+		stop(
+			sprintf(
+				"length(x) must be at least length(p); got length(x) = %d and length(p) = %d",
+				nobs,
+				nvars
+			),
+			call. = FALSE
+		)
+	}
 	opts_num <- as.numeric(opts)
 	eps3 <- if (length(opts_num) >= 4L) abs(opts_num[4L]) else NA_real_
 	ctx <- new.env(parent = parent.frame())
