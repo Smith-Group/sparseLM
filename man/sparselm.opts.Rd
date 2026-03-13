@@ -21,7 +21,8 @@ sparselm.opts(
 
 \item{epsilon3}{stopping threshold for ||e||_2}
 
-\item{delta}{step used in difference approximation to the Jacobian}
+\item{delta}{step used in difference approximation to the Jacobian;
+if negative, central differences are used instead of forward differences}
 }
 \value{
 numeric vector of length 6 with the above options and spsolver=1 (SuiteSparse CHOLMOD)

@@ -9,7 +9,8 @@ NULL
 #' @param epsilon1 stopping threshold for ||J^T e||_inf
 #' @param epsilon2 stopping threshold for ||dp||_2
 #' @param epsilon3 stopping threshold for ||e||_2
-#' @param delta step used in difference approximation to the Jacobian
+#' @param delta step used in difference approximation to the Jacobian;
+#'   if negative, central differences are used instead of forward differences
 #'
 #' @return numeric vector of length 6 with the above options and spsolver=1 (SuiteSparse CHOLMOD)
 #'
