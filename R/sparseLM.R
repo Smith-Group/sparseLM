@@ -125,9 +125,6 @@ sparselm <- function(p, x, func, fjac, Jnnz, nconvars=0, itmax=100, opts=sparsel
 		if (jac@p[1] != 0L || jac@p[nvars + 1L] != Jnnz || any(diff(jac@p) < 0L)) {
 			stop("fjac did not return expected dgCMatrix object", call. = FALSE)
 		}
-		if (any(diff(jac@p) == 0L)) {
-			stop("fjac must not contain empty columns", call. = FALSE)
-		}
 		for (col in seq_len(nvars)) {
 			start <- jac@p[col] + 1L
 			end <- jac@p[col + 1L]
