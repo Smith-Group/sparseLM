@@ -1,5 +1,5 @@
 Package: sparseLM
-Title: Interface for sparseLM Levenberg-Marquardt Package
+Title: Interface to the 'sparseLM' Levenberg-Marquardt Library
 Version: 0.5
 Authors@R: c(
     person("Colin", "Smith", email = "colin.smith@wesleyan.edu", role = c("aut", "cre"),
@@ -7,14 +7,16 @@ Authors@R: c(
     person("Manolis", "Lourakis", role = "aut",
            comment = c(ORCID = "0000-0003-4596-5773"))
     )
-Description: Provides an R interface to the sparseLM C library for
+Description: Provides an R interface to the 'sparseLM' C library for
     large-scale nonlinear least squares problems with arbitrarily sparse
     Jacobians. The underlying solver implements a sparse variant of the
     Levenberg-Marquardt algorithm for minimizing sum-of-squares objective
     functions, supports user-supplied analytic Jacobians or finite-difference
     approximation, and is designed to exploit sparsity for improved memory use
     and performance. This package exposes the solver in R and uses sparse
-    matrix classes and CHOLMOD routines through the Matrix package interface.
+    matrix classes and the 'CHOLMOD' sparse Cholesky factorization routines
+    through the 'Matrix' package interface. Methods from the C library are
+    described in Lourakis (2010) <doi:10.1007/978-3-642-15552-9_4>.
 URL: https://github.com/smith-group/sparseLM,
     https://smith-group.github.io/sparseLM/
 Depends: Matrix
