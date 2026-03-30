@@ -1,5 +1,9 @@
 # sparseLM R Package
 
+[![CRAN version](https://www.r-pkg.org/badges/version/sparseLM)](https://CRAN.R-project.org/package=sparseLM)
+[![R-universe version](https://smith-group.r-universe.dev/badges/sparseLM)](https://smith-group.r-universe.dev/sparseLM)
+[![R-universe checks](https://smith-group.r-universe.dev/sparseLM/badges/checks)](https://smith-group.r-universe.dev/sparseLM#checktable)
+
 `sparseLM` provides an R interface to the `sparseLM` library for solving
 nonlinear least squares problems with sparse Jacobians. The package wraps the
 underlying C solver and uses CHOLMOD through the `Matrix` package interface,
